@@ -41,7 +41,8 @@ const STAGES = [
 ];
 
 export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
-  const [selectedTask, setSelectedTask] = useState<ClickUpTask | null>(null);
+  const [selectedPhase, setSelectedPhase] = useState<any>(null);
+  const [selectedTask, setSelectedTask] = useState<ClickUpTask | null>(null); // Keep for backlog if needed or remove entirely. We'll keep it for backlog.
   
   // Helper to safely extract parent ID
   const getParentId = (task: ClickUpTask): string | null => {
@@ -172,16 +173,15 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
             </div>
 
             {/* Task Name */}
-            <button 
-              onClick={() => setSelectedTask(task)}
-              className={`text-sm text-left truncate transition-colors cursor-pointer ${
+            <div 
+              className={`text-sm text-left truncate transition-colors ${
                 visualDone 
                   ? 'text-zinc-600 line-through font-normal' 
                   : `font-medium ${isGrayMode ? 'text-zinc-400' : 'text-zinc-200 group-hover:text-white'}`
               }`}
             >
               {task.name}
-            </button>
+            </div>
          </div>
 
          {/* Right Side Status - Subtask Style (Dark Pill with Dot) */}
@@ -242,7 +242,8 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
           return (
             <div 
               key={stage.id} 
-              className={`${containerClasses} p-6 md:p-8 rounded-lg relative overflow-hidden group transition-all duration-500 flex flex-col min-h-[360px]`}
+              onClick={() => setSelectedPhase(stage)}
+              className={`${containerClasses} p-6 md:p-8 rounded-lg relative overflow-hidden group transition-all duration-500 flex flex-col min-h-[360px] cursor-pointer`}
             >
               {/* Interactive Gradient - Only for Orange Theme */}
               {isOrangeTheme && (
@@ -345,6 +346,141 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                  )
               })}
            </div>
+        </div>
+      )}
+
+      {/* Phase Modal */}
+      {selectedPhase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)}>
+          <div 
+            className="w-full max-w-4xl bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col max-h-[85vh]"
+            onClick={e => e.stopPropagation()}
+          >
+             {/* Gradient Background */}
+             <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+             {/* Header */}
+             <div className="flex flex-col p-6 md:p-8 border-b border-white/5 relative z-10">
+                <div className="flex items-start justify-between">
+                    {/* Big Number */}
+                    <span className="text-4xl md:text-6xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
+                        {selectedPhase.number}
+                    </span>
+                    <button 
+                      onClick={() => setSelectedPhase(null)}
+                      className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-4 mt-6">
+                    <div className="w-0.5 h-6 bg-[#ff4d00]"></div>
+                    <h3 className="text-2xl font-bold uppercase tracking-widest text-white">
+                        {selectedPhase.label}
+                    </h3>
+                    
+                    {selectedPhase.mainTaskStatus && (
+                      <div 
+                        className={`ml-4 px-3 py-1.5 rounded-full border flex items-center gap-2 shadow-lg transition-all duration-500 bg-[#040404]`}
+                        style={{
+                            borderColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#27272a' : (selectedPhase.mainTaskStatus.color || '#52525b'),
+                            boxShadow: isStatusDone(selectedPhase.mainTaskStatus.status) ? 'none' : `0 0 15px -8px ${selectedPhase.mainTaskStatus.color}40`
+                        }}
+                      >
+                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}></div>
+                         <span 
+                            className="text-[10px] font-bold uppercase tracking-wider"
+                            style={{ color: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}
+                         >
+                            {selectedPhase.mainTaskStatus.status}
+                         </span>
+                      </div>
+                    )}
+                </div>
+             </div>
+
+             {/* Body / Tasks List */}
+             <div className="p-6 md:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
+                <div className="space-y-6">
+                    {selectedPhase.items.length === 0 ? (
+                        <p className="text-zinc-500 italic">No tasks in this phase.</p>
+                    ) : (
+                        selectedPhase.items.map((task: ClickUpTask) => {
+                            const isDone = isStatusDone(task.status.status);
+                            const dotColor = isDone ? '#52525b' : (task.status.color || '#52525b');
+                            return (
+                                <div key={task.id} className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5 mb-4 last:mb-0 transition-colors hover:border-zinc-800">
+                                    <div className="flex flex-col md:flex-row md:items-start gap-4">
+                                        {/* Status Check / Icon */}
+                                        <div className={`mt-1 w-5 h-5 rounded-md flex items-center justify-center border shrink-0 ${isDone ? 'bg-zinc-800 border-transparent' : 'border-zinc-700'}`}>
+                                            {isDone && <Check className="w-3.5 h-3.5 text-zinc-500" />}
+                                        </div>
+                                        
+                                        <div className="flex-1 min-w-0">
+                                            {/* Task Header */}
+                                            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-2">
+                                                <h4 className={`text-base font-bold ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-200'}`}>
+                                                    {task.name}
+                                                </h4>
+                                                
+                                                {/* Badges */}
+                                                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                                                    {task.due_date && (
+                                                       <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#040404] border border-zinc-800 text-zinc-400">
+                                                           <Calendar className="w-3 h-3" />
+                                                           <span className="text-[9px] font-bold uppercase tracking-wider">
+                                                               Due {new Date(parseInt(task.due_date)).toLocaleDateString()}
+                                                           </span>
+                                                       </div>
+                                                    )}
+                                                    <div 
+                                                        className="px-2 py-0.5 rounded border flex items-center gap-1.5 bg-[#040404] border-[#27272a]"
+                                                    >
+                                                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor }}></div>
+                                                        <span 
+                                                            className="text-[9px] font-bold uppercase tracking-wider"
+                                                            style={{ color: isDone ? '#52525b' : (task.status.color || '#52525b') }}
+                                                        >
+                                                            {task.status.status}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Description */}
+                                            {(task.description || task.text_content) && (
+                                                <div className="mt-3 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                                                    {task.description || task.text_content}
+                                                </div>
+                                            )}
+
+                                            {/* Assignees */}
+                                            {task.assignees && task.assignees.length > 0 && (
+                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                    {task.assignees.map(u => (
+                                                        <div key={u.id} className="flex items-center gap-2 bg-[#040404] border border-zinc-800 rounded-full pl-1 pr-3 py-1">
+                                                            <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[9px] font-bold text-zinc-400">
+                                                                {u.profilePicture ? (
+                                                                    <img src={u.profilePicture} alt={u.username} className="w-full h-full rounded-full object-cover" />
+                                                                ) : (
+                                                                    u.username.charAt(0)
+                                                                )}
+                                                            </div>
+                                                            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">{u.username}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+             </div>
+          </div>
         </div>
       )}
 

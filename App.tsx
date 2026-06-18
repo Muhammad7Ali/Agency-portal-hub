@@ -7,6 +7,7 @@ import { DashboardOverview } from './components/DashboardOverview';
 import { StatusDonut } from './components/StatusDonut';
 import { DocumentsCard } from './components/DocumentsCard';
 import { ClientsView } from './components/ClientsView';
+import { getPhaseData } from './components/phaseUtils';
 import { ClickUpList, ClickUpTask, Metrics } from './types';
 import { fetchLists, fetchTasks } from './services/clickup';
 import { generateExecutiveSummary } from './services/gemini';
@@ -101,6 +102,8 @@ const App: React.FC = () => {
 
     return { total, completed, inProgress, byStatus };
   }, [tasks]);
+
+  const currentPhaseData = useMemo(() => getPhaseData(tasks), [tasks]);
 
   const currentListName = useMemo(() => 
     lists?.find(l => l.id === selectedListId)?.name || 'N/A', 
@@ -379,8 +382,8 @@ const App: React.FC = () => {
                  <div className="col-span-1 min-h-[160px]">
                   <MetricCard 
                     title="Upcoming Deadlines" 
-                    value={tasks.filter(t => t.due_date).length || 3} 
-                    subValue="Next 7 days"
+                    value={`${currentPhaseData.count}`} 
+                    subValue={currentPhaseData.daysText.toUpperCase()}
                     icon={<MoreHorizontal className="w-5 h-5" />}
                   />
                 </div>

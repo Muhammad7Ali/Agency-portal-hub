@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ClickUpTask, ClickUpStatus } from '../types';
-import { Check, LayoutList, CircleDashed } from 'lucide-react';
+import { Check, LayoutList, CircleDashed, X, Calendar, AlignLeft } from 'lucide-react';
 
 interface TaskBoardProps {
   tasks: ClickUpTask[];
@@ -41,6 +41,7 @@ const STAGES = [
 ];
 
 export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
+  const [selectedTask, setSelectedTask] = useState<ClickUpTask | null>(null);
   
   // Helper to safely extract parent ID
   const getParentId = (task: ClickUpTask): string | null => {
@@ -171,18 +172,16 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
             </div>
 
             {/* Task Name */}
-            <a 
-              href={task.url}
-              target="_blank"
-              rel="noreferrer"
-              className={`text-sm truncate transition-colors ${
+            <button 
+              onClick={() => setSelectedTask(task)}
+              className={`text-sm text-left truncate transition-colors cursor-pointer ${
                 visualDone 
                   ? 'text-zinc-600 line-through font-normal' 
                   : `font-medium ${isGrayMode ? 'text-zinc-400' : 'text-zinc-200 group-hover:text-white'}`
               }`}
             >
               {task.name}
-            </a>
+            </button>
          </div>
 
          {/* Right Side Status - Subtask Style (Dark Pill with Dot) */}
@@ -338,14 +337,99 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                                 </div>
                             </div>
                         </div>
-                        <a href={item.url} target="_blank" rel="noreferrer" className={`text-sm font-medium block mb-1 truncate ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-300 group-hover:text-white'}`}>
+                        <button onClick={() => setSelectedTask(item)} className={`text-sm font-medium block text-left mb-1 truncate cursor-pointer ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-300 group-hover:text-white'}`}>
                             {item.name}
-                        </a>
+                        </button>
                       </div>
                    </div>
                  )
               })}
            </div>
+        </div>
+      )}
+
+      {/* Task Modal */}
+      {selectedTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedTask(null)}>
+          <div 
+            className="w-full max-w-2xl bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col max-h-[85vh]"
+            onClick={e => e.stopPropagation()}
+          >
+             {/* Gradient Background */}
+             <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+             {/* Header */}
+             <div className="flex items-start justify-between p-6 md:p-8 border-b border-white/5 relative z-10">
+                <div className="flex-1 pr-6">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800">
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedTask.status.color || '#52525b' }}></div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: selectedTask.status.color || '#52525b' }}>
+                                {selectedTask.status.status}
+                            </span>
+                        </div>
+                        {selectedTask.due_date && (
+                           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800 text-zinc-400">
+                               <Calendar className="w-3.5 h-3.5" />
+                               <span className="text-[10px] font-bold uppercase tracking-wider">
+                                   Due {new Date(parseInt(selectedTask.due_date)).toLocaleDateString()}
+                               </span>
+                           </div>
+                        )}
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-bold text-white tracking-wide">{selectedTask.name}</h2>
+                </div>
+                <button 
+                  onClick={() => setSelectedTask(null)}
+                  className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+             </div>
+
+             {/* Body */}
+             <div className="p-6 md:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
+                <div className="space-y-6">
+                    <div>
+                        <div className="flex items-center gap-2 text-white mb-3">
+                            <AlignLeft className="w-4 h-4 text-[#ff4d00]" />
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-300">Description</h3>
+                        </div>
+                        <div className="prose prose-invert prose-sm max-w-none prose-p:text-zinc-400 prose-headings:text-zinc-200">
+                            {selectedTask.description ? (
+                                <p className="whitespace-pre-wrap leading-relaxed">{selectedTask.description}</p>
+                            ) : selectedTask.text_content ? (
+                                <p className="whitespace-pre-wrap leading-relaxed">{selectedTask.text_content}</p>
+                            ) : (
+                                <p className="italic text-zinc-600">No description provided.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {selectedTask.assignees && selectedTask.assignees.length > 0 && (
+                        <div>
+                           <div className="flex items-center gap-2 text-white mb-3">
+                              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-300">Assignees</h3>
+                           </div>
+                           <div className="flex flex-wrap gap-2">
+                               {selectedTask.assignees.map(u => (
+                                   <div key={u.id} className="flex items-center gap-2 bg-[#0a0a0a] border border-white/5 rounded-full pl-1 pr-3 py-1">
+                                      <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                                         {u.profilePicture ? (
+                                             <img src={u.profilePicture} alt={u.username} className="w-full h-full rounded-full object-cover" />
+                                         ) : (
+                                             u.username.charAt(0)
+                                         )}
+                                      </div>
+                                      <span className="text-xs font-medium text-zinc-300">{u.username}</span>
+                                   </div>
+                               ))}
+                           </div>
+                        </div>
+                    )}
+                </div>
+             </div>
+          </div>
         </div>
       )}
     </div>

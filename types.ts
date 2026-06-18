@@ -31,6 +31,8 @@ export interface ClickUpTask {
   parent?: string | null;
   listId?: string;
   listName?: string;
+  description?: string;
+  text_content?: string;
 }
 
 export interface ClickUpListResponse {

@@ -362,58 +362,57 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
 
       {/* Phase Modal */}
       {selectedPhase && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-sm animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedPhase(null)}>
-          <div className="min-h-full flex flex-col justify-center p-4 py-8 sm:p-8">
-            <div 
-              className="w-full max-w-4xl mx-auto bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col shrink-0"
-              onClick={e => e.stopPropagation()}
-            >
-               {/* Gradient Background */}
-               <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)}>
+          <div 
+            className="w-full max-w-4xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col max-h-[90vh]"
+            onClick={e => e.stopPropagation()}
+          >
+             {/* Gradient Background */}
+             <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff4d00]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-               {/* Header */}
-               <div className="flex flex-col p-6 md:p-8 border-b border-white/5 relative z-10">
-                  <div className="flex items-start justify-between">
-                      {/* Big Number */}
-                      <span className="text-4xl md:text-6xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
-                          {selectedPhase.number}
-                      </span>
-                      <button 
-                        onClick={() => setSelectedPhase(null)}
-                        className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+             {/* Header */}
+             <div className="flex flex-col p-5 sm:p-8 border-b border-white/5 relative z-10 shrink-0 bg-[#0a0a0a]/80 backdrop-blur-md">
+                <div className="flex items-start justify-between">
+                    {/* Big Number */}
+                    <span className="text-3xl sm:text-5xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
+                        {selectedPhase.number}
+                    </span>
+                    <button 
+                      onClick={() => setSelectedPhase(null)}
+                      className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-4 mt-4 sm:mt-6">
+                    <div className="w-0.5 h-5 bg-[#ff4d00]"></div>
+                    <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-white">
+                        {selectedPhase.label}
+                    </h3>
+                    
+                    {selectedPhase.mainTaskStatus && (
+                      <div 
+                        className={`ml-2 px-2.5 py-1 rounded-full border flex items-center gap-1.5 shadow-lg transition-all duration-500 bg-[#040404]`}
+                        style={{
+                            borderColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#27272a' : (selectedPhase.mainTaskStatus.color || '#52525b'),
+                            boxShadow: isStatusDone(selectedPhase.mainTaskStatus.status) ? 'none' : `0 0 15px -8px ${selectedPhase.mainTaskStatus.color}40`
+                        }}
                       >
-                        <X className="w-5 h-5" />
-                      </button>
-                  </div>
+                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}></div>
+                         <span 
+                            className="text-[9px] font-bold uppercase tracking-wider"
+                            style={{ color: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}
+                         >
+                            {selectedPhase.mainTaskStatus.status}
+                         </span>
+                      </div>
+                    )}
+                </div>
+             </div>
 
-                  <div className="flex items-center gap-4 mt-6">
-                      <div className="w-0.5 h-6 bg-[#ff4d00]"></div>
-                      <h3 className="text-2xl font-bold uppercase tracking-widest text-white">
-                          {selectedPhase.label}
-                      </h3>
-                      
-                      {selectedPhase.mainTaskStatus && (
-                        <div 
-                          className={`ml-4 px-3 py-1.5 rounded-full border flex items-center gap-2 shadow-lg transition-all duration-500 bg-[#040404]`}
-                          style={{
-                              borderColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#27272a' : (selectedPhase.mainTaskStatus.color || '#52525b'),
-                              boxShadow: isStatusDone(selectedPhase.mainTaskStatus.status) ? 'none' : `0 0 15px -8px ${selectedPhase.mainTaskStatus.color}40`
-                          }}
-                        >
-                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}></div>
-                           <span 
-                              className="text-[10px] font-bold uppercase tracking-wider"
-                              style={{ color: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}
-                           >
-                              {selectedPhase.mainTaskStatus.status}
-                           </span>
-                        </div>
-                      )}
-                  </div>
-               </div>
-
-               {/* Body / Tasks List */}
-               <div className="p-6 md:p-8 relative z-10 flex-1">
+             {/* Body / Tasks List */}
+             <div className="p-5 sm:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
                   <div className="space-y-6">
                     {selectedPhase.items.length === 0 ? (
                         <p className="text-zinc-500 italic">No tasks in this phase.</p>
@@ -422,33 +421,31 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                             const isDone = isStatusDone(task.status.status);
                             const dotColor = isDone ? '#52525b' : (task.status.color || '#52525b');
                             return (
-                                <div key={task.id} className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5 mb-4 last:mb-0 transition-colors hover:border-zinc-800">
-                                    <div className="flex flex-col md:flex-row md:items-start gap-4">
+                                <div key={task.id} className="bg-[#040404] border border-white/5 rounded-xl p-4 mb-4 last:mb-0 transition-colors hover:border-zinc-800">
+                                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                                         {/* Status Check / Icon */}
-                                        <div className={`mt-1 w-5 h-5 rounded-md flex items-center justify-center border shrink-0 ${isDone ? 'bg-zinc-800 border-transparent' : 'border-zinc-700'}`}>
-                                            {isDone && <Check className="w-3.5 h-3.5 text-zinc-500" />}
+                                        <div className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border shrink-0 ${isDone ? 'bg-zinc-800 border-transparent' : 'border-zinc-700'}`}>
+                                            {isDone && <Check className="w-3 h-3 text-zinc-500" />}
                                         </div>
                                         
                                         <div className="flex-1 min-w-0">
                                             {/* Task Header */}
-                                            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-2">
-                                                <h4 className={`text-base font-bold ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-200'}`}>
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                                <h4 className={`text-sm sm:text-base font-bold ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-200'}`}>
                                                     {task.name}
                                                 </h4>
                                                 
                                                 {/* Badges */}
                                                 <div className="flex flex-wrap items-center gap-2 shrink-0">
                                                     {task.due_date && (
-                                                       <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#040404] border border-zinc-800 text-zinc-400">
+                                                       <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#0a0a0a] border border-zinc-800 text-zinc-400">
                                                            <Calendar className="w-3 h-3" />
                                                            <span className="text-[9px] font-bold uppercase tracking-wider">
                                                                Due {new Date(parseInt(task.due_date)).toLocaleDateString()}
                                                            </span>
                                                        </div>
                                                     )}
-                                                    <div 
-                                                        className="px-2 py-0.5 rounded border flex items-center gap-1.5 bg-[#040404] border-[#27272a]"
-                                                    >
+                                                    <div className="px-2 py-0.5 rounded border flex items-center gap-1.5 bg-[#0a0a0a] border-[#27272a]">
                                                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor }}></div>
                                                         <span 
                                                             className="text-[9px] font-bold uppercase tracking-wider"
@@ -462,24 +459,24 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
 
                                             {/* Description */}
                                             {(task.description || task.text_content) && (
-                                                <div className="mt-3 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                                                <div className="mt-2 text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
                                                     {task.description || task.text_content}
                                                 </div>
                                             )}
 
                                             {/* Assignees */}
                                             {task.assignees && task.assignees.length > 0 && (
-                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                <div className="mt-3 flex flex-wrap gap-2">
                                                     {task.assignees.map(u => (
-                                                        <div key={u.id} className="flex items-center gap-2 bg-[#040404] border border-zinc-800 rounded-full pl-1 pr-3 py-1">
-                                                            <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[9px] font-bold text-zinc-400">
+                                                        <div key={u.id} className="flex items-center gap-1.5 bg-[#0a0a0a] border border-zinc-800 rounded-full pl-1 pr-2.5 py-1">
+                                                            <div className="w-4 h-4 rounded-full bg-zinc-800 flex items-center justify-center text-[8px] font-bold text-zinc-400">
                                                                 {u.profilePicture ? (
                                                                     <img src={u.profilePicture} alt={u.username} className="w-full h-full rounded-full object-cover" />
                                                                 ) : (
                                                                     u.username.charAt(0)
                                                                 )}
                                                             </div>
-                                                            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">{u.username}</span>
+                                                            <span className="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">{u.username}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -490,55 +487,53 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                             );
                         })
                     )}
-                </div>
+                 </div>
              </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* Task Modal */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-sm animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedTask(null)}>
-          <div className="min-h-full flex flex-col justify-center p-4 py-8 sm:p-8">
-            <div 
-              className="w-full max-w-2xl mx-auto bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col shrink-0"
-              onClick={e => e.stopPropagation()}
-            >
-               {/* Gradient Background */}
-               <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedTask(null)}>
+          <div 
+            className="w-full max-w-2xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col max-h-[90vh]"
+            onClick={e => e.stopPropagation()}
+          >
+             {/* Gradient Background */}
+             <div className="absolute top-0 right-0 w-80 h-80 bg-[#ff4d00]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-               {/* Header */}
-               <div className="flex items-start justify-between p-6 md:p-8 border-b border-white/5 relative z-10">
-                  <div className="flex-1 pr-6">
-                      <div className="flex items-center gap-3 mb-3">
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800">
-                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedTask.status.color || '#52525b' }}></div>
-                              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: selectedTask.status.color || '#52525b' }}>
-                                  {selectedTask.status.status}
-                              </span>
-                          </div>
-                          {selectedTask.due_date && (
-                             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800 text-zinc-400">
-                                 <Calendar className="w-3.5 h-3.5" />
-                                 <span className="text-[10px] font-bold uppercase tracking-wider">
-                                     Due {new Date(parseInt(selectedTask.due_date)).toLocaleDateString()}
-                                 </span>
-                             </div>
-                          )}
-                      </div>
-                      <h2 className="text-xl md:text-2xl font-bold text-white tracking-wide">{selectedTask.name}</h2>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedTask(null)}
-                    className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-               </div>
+             {/* Header */}
+             <div className="flex items-start justify-between p-5 sm:p-8 border-b border-white/5 relative z-10 shrink-0 bg-[#0a0a0a]/80 backdrop-blur-md">
+                <div className="flex-1 pr-4 sm:pr-6">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[#040404] border border-zinc-800">
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedTask.status.color || '#52525b' }}></div>
+                            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: selectedTask.status.color || '#52525b' }}>
+                                {selectedTask.status.status}
+                            </span>
+                        </div>
+                        {selectedTask.due_date && (
+                           <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[#040404] border border-zinc-800 text-zinc-400">
+                               <Calendar className="w-3 h-3" />
+                               <span className="text-[9px] font-bold uppercase tracking-wider">
+                                   Due {new Date(parseInt(selectedTask.due_date)).toLocaleDateString()}
+                               </span>
+                           </div>
+                        )}
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide leading-snug">{selectedTask.name}</h2>
+                </div>
+                <button 
+                  onClick={() => setSelectedTask(null)}
+                  className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+             </div>
 
-               {/* Body */}
-               <div className="p-6 md:p-8 relative z-10 flex-1">
+             {/* Body */}
+             <div className="p-5 sm:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
                   <div className="space-y-6">
                     <div>
                         <div className="flex items-center gap-2 text-white mb-3">
@@ -559,19 +554,19 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                     {selectedTask.assignees && selectedTask.assignees.length > 0 && (
                         <div>
                            <div className="flex items-center gap-2 text-white mb-3">
-                              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-300">Assignees</h3>
+                              <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-300">Assignees</h3>
                            </div>
                            <div className="flex flex-wrap gap-2">
                                {selectedTask.assignees.map(u => (
-                                   <div key={u.id} className="flex items-center gap-2 bg-[#0a0a0a] border border-white/5 rounded-full pl-1 pr-3 py-1">
-                                      <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                                   <div key={u.id} className="flex items-center gap-2 bg-[#040404] border border-white/5 rounded-full pl-1 pr-3 py-1">
+                                      <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[9px] font-bold text-zinc-400">
                                          {u.profilePicture ? (
                                              <img src={u.profilePicture} alt={u.username} className="w-full h-full rounded-full object-cover" />
                                          ) : (
                                              u.username.charAt(0)
                                          )}
                                       </div>
-                                      <span className="text-xs font-medium text-zinc-300">{u.username}</span>
+                                      <span className="text-xs font-medium text-zinc-300 uppercase tracking-wider">{u.username}</span>
                                    </div>
                                ))}
                            </div>
@@ -581,7 +576,6 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
           </div>
         </div>
-      </div>
       )}
     </div>
   );

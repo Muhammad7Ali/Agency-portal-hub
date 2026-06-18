@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ClickUpTask, ClickUpStatus } from '../types';
 import { Check, LayoutList, CircleDashed, X, Calendar, AlignLeft } from 'lucide-react';
 
@@ -44,6 +44,17 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
   const [selectedPhase, setSelectedPhase] = useState<any>(null);
   const [selectedTask, setSelectedTask] = useState<ClickUpTask | null>(null); // Keep for backlog if needed or remove entirely. We'll keep it for backlog.
   
+  useEffect(() => {
+    if (selectedPhase || selectedTask) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedPhase, selectedTask]);
+
   // Helper to safely extract parent ID
   const getParentId = (task: ClickUpTask): string | null => {
     if (!task.parent) return null;
@@ -351,58 +362,59 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
 
       {/* Phase Modal */}
       {selectedPhase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)}>
-          <div 
-            className="w-full max-w-4xl bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col max-h-[85vh]"
-            onClick={e => e.stopPropagation()}
-          >
-             {/* Gradient Background */}
-             <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-sm animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedPhase(null)}>
+          <div className="min-h-full flex flex-col justify-center p-4 py-8 sm:p-8">
+            <div 
+              className="w-full max-w-4xl mx-auto bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col shrink-0"
+              onClick={e => e.stopPropagation()}
+            >
+               {/* Gradient Background */}
+               <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-             {/* Header */}
-             <div className="flex flex-col p-6 md:p-8 border-b border-white/5 relative z-10">
-                <div className="flex items-start justify-between">
-                    {/* Big Number */}
-                    <span className="text-4xl md:text-6xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
-                        {selectedPhase.number}
-                    </span>
-                    <button 
-                      onClick={() => setSelectedPhase(null)}
-                      className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-4 mt-6">
-                    <div className="w-0.5 h-6 bg-[#ff4d00]"></div>
-                    <h3 className="text-2xl font-bold uppercase tracking-widest text-white">
-                        {selectedPhase.label}
-                    </h3>
-                    
-                    {selectedPhase.mainTaskStatus && (
-                      <div 
-                        className={`ml-4 px-3 py-1.5 rounded-full border flex items-center gap-2 shadow-lg transition-all duration-500 bg-[#040404]`}
-                        style={{
-                            borderColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#27272a' : (selectedPhase.mainTaskStatus.color || '#52525b'),
-                            boxShadow: isStatusDone(selectedPhase.mainTaskStatus.status) ? 'none' : `0 0 15px -8px ${selectedPhase.mainTaskStatus.color}40`
-                        }}
+               {/* Header */}
+               <div className="flex flex-col p-6 md:p-8 border-b border-white/5 relative z-10">
+                  <div className="flex items-start justify-between">
+                      {/* Big Number */}
+                      <span className="text-4xl md:text-6xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
+                          {selectedPhase.number}
+                      </span>
+                      <button 
+                        onClick={() => setSelectedPhase(null)}
+                        className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
                       >
-                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}></div>
-                         <span 
-                            className="text-[10px] font-bold uppercase tracking-wider"
-                            style={{ color: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}
-                         >
-                            {selectedPhase.mainTaskStatus.status}
-                         </span>
-                      </div>
-                    )}
-                </div>
-             </div>
+                        <X className="w-5 h-5" />
+                      </button>
+                  </div>
 
-             {/* Body / Tasks List */}
-             <div className="p-6 md:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
-                <div className="space-y-6">
+                  <div className="flex items-center gap-4 mt-6">
+                      <div className="w-0.5 h-6 bg-[#ff4d00]"></div>
+                      <h3 className="text-2xl font-bold uppercase tracking-widest text-white">
+                          {selectedPhase.label}
+                      </h3>
+                      
+                      {selectedPhase.mainTaskStatus && (
+                        <div 
+                          className={`ml-4 px-3 py-1.5 rounded-full border flex items-center gap-2 shadow-lg transition-all duration-500 bg-[#040404]`}
+                          style={{
+                              borderColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#27272a' : (selectedPhase.mainTaskStatus.color || '#52525b'),
+                              boxShadow: isStatusDone(selectedPhase.mainTaskStatus.status) ? 'none' : `0 0 15px -8px ${selectedPhase.mainTaskStatus.color}40`
+                          }}
+                        >
+                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}></div>
+                           <span 
+                              className="text-[10px] font-bold uppercase tracking-wider"
+                              style={{ color: isStatusDone(selectedPhase.mainTaskStatus.status) ? '#52525b' : (selectedPhase.mainTaskStatus.color || '#52525b') }}
+                           >
+                              {selectedPhase.mainTaskStatus.status}
+                           </span>
+                        </div>
+                      )}
+                  </div>
+               </div>
+
+               {/* Body / Tasks List */}
+               <div className="p-6 md:p-8 relative z-10 flex-1">
+                  <div className="space-y-6">
                     {selectedPhase.items.length === 0 ? (
                         <p className="text-zinc-500 italic">No tasks in this phase.</p>
                     ) : (
@@ -482,50 +494,52 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* Task Modal */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedTask(null)}>
-          <div 
-            className="w-full max-w-2xl bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col max-h-[85vh]"
-            onClick={e => e.stopPropagation()}
-          >
-             {/* Gradient Background */}
-             <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-sm animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedTask(null)}>
+          <div className="min-h-full flex flex-col justify-center p-4 py-8 sm:p-8">
+            <div 
+              className="w-full max-w-2xl mx-auto bg-[#070707] border border-[#ff4d00]/20 shadow-[0_10px_40px_-15px_rgba(255,77,0,0.15)] rounded-xl overflow-hidden relative flex flex-col shrink-0"
+              onClick={e => e.stopPropagation()}
+            >
+               {/* Gradient Background */}
+               <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4d00]/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-             {/* Header */}
-             <div className="flex items-start justify-between p-6 md:p-8 border-b border-white/5 relative z-10">
-                <div className="flex-1 pr-6">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800">
-                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedTask.status.color || '#52525b' }}></div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: selectedTask.status.color || '#52525b' }}>
-                                {selectedTask.status.status}
-                            </span>
-                        </div>
-                        {selectedTask.due_date && (
-                           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800 text-zinc-400">
-                               <Calendar className="w-3.5 h-3.5" />
-                               <span className="text-[10px] font-bold uppercase tracking-wider">
-                                   Due {new Date(parseInt(selectedTask.due_date)).toLocaleDateString()}
-                               </span>
-                           </div>
-                        )}
-                    </div>
-                    <h2 className="text-xl md:text-2xl font-bold text-white tracking-wide">{selectedTask.name}</h2>
-                </div>
-                <button 
-                  onClick={() => setSelectedTask(null)}
-                  className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-             </div>
+               {/* Header */}
+               <div className="flex items-start justify-between p-6 md:p-8 border-b border-white/5 relative z-10">
+                  <div className="flex-1 pr-6">
+                      <div className="flex items-center gap-3 mb-3">
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800">
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedTask.status.color || '#52525b' }}></div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: selectedTask.status.color || '#52525b' }}>
+                                  {selectedTask.status.status}
+                              </span>
+                          </div>
+                          {selectedTask.due_date && (
+                             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-zinc-800 text-zinc-400">
+                                 <Calendar className="w-3.5 h-3.5" />
+                                 <span className="text-[10px] font-bold uppercase tracking-wider">
+                                     Due {new Date(parseInt(selectedTask.due_date)).toLocaleDateString()}
+                                 </span>
+                             </div>
+                          )}
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-bold text-white tracking-wide">{selectedTask.name}</h2>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedTask(null)}
+                    className="p-2 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+               </div>
 
-             {/* Body */}
-             <div className="p-6 md:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
-                <div className="space-y-6">
+               {/* Body */}
+               <div className="p-6 md:p-8 relative z-10 flex-1">
+                  <div className="space-y-6">
                     <div>
                         <div className="flex items-center gap-2 text-white mb-3">
                             <AlignLeft className="w-4 h-4 text-[#ff4d00]" />
@@ -567,6 +581,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
           </div>
         </div>
+      </div>
       )}
     </div>
   );

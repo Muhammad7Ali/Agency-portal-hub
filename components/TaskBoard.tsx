@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ClickUpTask, ClickUpStatus } from '../types';
 import { Check, LayoutList, CircleDashed, X, Calendar, AlignLeft } from 'lucide-react';
 
@@ -371,9 +372,9 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
       )}
 
       {/* Phase Modal */}
-      {selectedPhase && (
-        <div className="fixed inset-0 z-[100] flex">
-          <div className="absolute inset-0 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)} />
+      {selectedPhase && document.body && createPortal(
+        <div className="fixed inset-0 z-[9999] flex">
+          <div className="absolute inset-0 bg-[#040404] animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)} />
           <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar" onClick={() => setSelectedPhase(null)}>
             <div className="min-h-screen flex flex-col justify-start items-center">
               <div 
@@ -506,12 +507,12 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
         </div>
       </div>
     </div>
-    )}
+    , document.body)}
 
     {/* Task Modal */}
-      {selectedTask && (
-        <div className="fixed inset-0 z-[100] flex">
-          <div className="absolute inset-0 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedTask(null)} />
+      {selectedTask && document.body && createPortal(
+        <div className="fixed inset-0 z-[9999] flex">
+          <div className="absolute inset-0 bg-[#040404] animate-in fade-in duration-200" onClick={() => setSelectedTask(null)} />
           <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar" onClick={() => setSelectedTask(null)}>
             <div className="min-h-screen flex flex-col justify-start items-center">
               <div 
@@ -596,7 +597,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
         </div>
       </div>
     </div>
-    )}
+    , document.body)}
   </div>
 );
 };

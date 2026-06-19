@@ -375,9 +375,9 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
         <div className="fixed inset-0 z-[100] flex">
           <div className="absolute inset-0 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)} />
           <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar" onClick={() => setSelectedPhase(null)}>
-            <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
+            <div className="min-h-screen flex flex-col justify-start items-center">
               <div 
-                className="w-full max-w-4xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
+                className="w-full max-w-5xl bg-[#0a0a0a] sm:border-x border-[#ff4d00]/20 shadow-[0_0_100px_rgba(255,77,0,0.05)] overflow-hidden relative flex flex-col shrink-0 flex-1"
                 onClick={e => e.stopPropagation()}
               >
              {/* Gradient Background */}
@@ -513,9 +513,9 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
         <div className="fixed inset-0 z-[100] flex">
           <div className="absolute inset-0 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedTask(null)} />
           <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar" onClick={() => setSelectedTask(null)}>
-            <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
+            <div className="min-h-screen flex flex-col justify-start items-center">
               <div 
-                className="w-full max-w-2xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
+                className="w-full max-w-3xl bg-[#0a0a0a] sm:border-x border-[#ff4d00]/20 shadow-[0_0_100px_rgba(255,77,0,0.05)] overflow-hidden relative flex flex-col shrink-0 flex-1"
                 onClick={e => e.stopPropagation()}
               >
              {/* Gradient Background */}

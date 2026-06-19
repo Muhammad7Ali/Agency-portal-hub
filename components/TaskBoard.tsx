@@ -45,13 +45,23 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
   const [selectedTask, setSelectedTask] = useState<ClickUpTask | null>(null); // Keep for backlog if needed or remove entirely. We'll keep it for backlog.
   
   useEffect(() => {
+    const mainElement = document.querySelector('main');
     if (selectedPhase || selectedTask) {
       document.body.style.overflow = 'hidden';
+      if (mainElement) {
+        mainElement.style.overflow = 'hidden';
+      }
     } else {
       document.body.style.overflow = '';
+      if (mainElement) {
+        mainElement.style.overflow = '';
+      }
     }
     return () => {
       document.body.style.overflow = '';
+      if (mainElement) {
+        mainElement.style.overflow = '';
+      }
     };
   }, [selectedPhase, selectedTask]);
 
@@ -362,11 +372,12 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
 
       {/* Phase Modal */}
       {selectedPhase && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)}>
-          <div 
-            className="w-full max-w-4xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col max-h-[90vh]"
-            onClick={e => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedPhase(null)}>
+          <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
+            <div 
+              className="w-full max-w-4xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
+              onClick={e => e.stopPropagation()}
+            >
              {/* Gradient Background */}
              <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff4d00]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -374,7 +385,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              <div className="flex flex-col p-5 sm:p-8 border-b border-white/5 relative z-10 shrink-0 bg-[#0a0a0a]/80 backdrop-blur-md">
                 <div className="flex items-start justify-between">
                     {/* Big Number */}
-                    <span className="text-3xl sm:text-5xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
+                    <span className="text-3xl sm:text-4xl font-mono font-bold tracking-tighter leading-none select-none text-[#ff4d00] opacity-20">
                         {selectedPhase.number}
                     </span>
                     <button 
@@ -385,9 +396,9 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                     </button>
                 </div>
 
-                <div className="flex items-center gap-4 mt-4 sm:mt-6">
-                    <div className="w-0.5 h-5 bg-[#ff4d00]"></div>
-                    <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-white">
+                <div className="flex items-center gap-3 mt-4 sm:mt-5">
+                    <div className="w-0.5 h-4 bg-[#ff4d00]"></div>
+                    <h3 className="text-lg sm:text-xl font-bold uppercase tracking-widest text-white">
                         {selectedPhase.label}
                     </h3>
                     
@@ -412,7 +423,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
 
              {/* Body / Tasks List */}
-             <div className="p-5 sm:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
+             <div className="p-5 sm:p-8 relative z-10 flex-1">
                   <div className="space-y-6">
                     {selectedPhase.items.length === 0 ? (
                         <p className="text-zinc-500 italic">No tasks in this phase.</p>
@@ -431,7 +442,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                                         <div className="flex-1 min-w-0">
                                             {/* Task Header */}
                                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                                                <h4 className={`text-sm sm:text-base font-bold ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-200'}`}>
+                                                <h4 className={`text-sm font-bold ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-200'}`}>
                                                     {task.name}
                                                 </h4>
                                                 
@@ -491,15 +502,17 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* Task Modal */}
       {selectedTask && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedTask(null)}>
-          <div 
-            className="w-full max-w-2xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col max-h-[90vh]"
-            onClick={e => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedTask(null)}>
+          <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
+            <div 
+              className="w-full max-w-2xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
+              onClick={e => e.stopPropagation()}
+            >
              {/* Gradient Background */}
              <div className="absolute top-0 right-0 w-80 h-80 bg-[#ff4d00]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -533,7 +546,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
 
              {/* Body */}
-             <div className="p-5 sm:p-8 overflow-y-auto relative z-10 flex-1 custom-scrollbar">
+             <div className="p-5 sm:p-8 relative z-10 flex-1">
                   <div className="space-y-6">
                     <div>
                         <div className="flex items-center gap-2 text-white mb-3">
@@ -576,6 +589,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
              </div>
           </div>
         </div>
+      </div>
       )}
     </div>
   );

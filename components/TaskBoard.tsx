@@ -372,12 +372,14 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
 
       {/* Phase Modal */}
       {selectedPhase && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedPhase(null)}>
-          <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
-            <div 
-              className="w-full max-w-4xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
-              onClick={e => e.stopPropagation()}
-            >
+        <div className="fixed inset-0 z-[100] flex">
+          <div className="absolute inset-0 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedPhase(null)} />
+          <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar" onClick={() => setSelectedPhase(null)}>
+            <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
+              <div 
+                className="w-full max-w-4xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
+                onClick={e => e.stopPropagation()}
+              >
              {/* Gradient Background */}
              <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff4d00]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -503,16 +505,19 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
           </div>
         </div>
       </div>
-      )}
+    </div>
+    )}
 
-      {/* Task Modal */}
+    {/* Task Modal */}
       {selectedTask && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200 custom-scrollbar" onClick={() => setSelectedTask(null)}>
-          <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
-            <div 
-              className="w-full max-w-2xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
-              onClick={e => e.stopPropagation()}
-            >
+        <div className="fixed inset-0 z-[100] flex">
+          <div className="absolute inset-0 bg-[#040404]/95 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setSelectedTask(null)} />
+          <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar" onClick={() => setSelectedTask(null)}>
+            <div className="min-h-full flex flex-col justify-start items-center p-4 py-8 sm:p-8">
+              <div 
+                className="w-full max-w-2xl bg-[#0a0a0a] border border-[#ff4d00]/20 shadow-[0_10px_50px_-15px_rgba(255,77,0,0.2)] rounded-2xl overflow-hidden relative flex flex-col shrink-0"
+                onClick={e => e.stopPropagation()}
+              >
              {/* Gradient Background */}
              <div className="absolute top-0 right-0 w-80 h-80 bg-[#ff4d00]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -590,7 +595,8 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
           </div>
         </div>
       </div>
-      )}
     </div>
-  );
+    )}
+  </div>
+);
 };

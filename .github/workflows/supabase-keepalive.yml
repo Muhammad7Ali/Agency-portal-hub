@@ -1,7 +1,5 @@
 # .github/workflows/supabase-keepalive.yml
-
 name: Supabase Keep-Alive
-
 on:
   schedule:
     - cron: '0 */6 * * *'   # Every 6 hours
@@ -13,5 +11,18 @@ jobs:
     steps:
       - name: Ping Supabase DB
         run: |
-          curl -s "${{ secrets.SUPABASE_URL }}/rest/v1/your_table?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
+          response=$(curl -s -w "\n%{http_code}" "${{ secrets.SUPABASE_URL }}/rest/v1/clients?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "❌ Ping failed with status $http_code"
+            exit 1
+          fi
+
+          echo "✅ Ping successful"
